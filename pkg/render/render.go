@@ -2,29 +2,30 @@ package render
 
 import (
 	"bytes"
+	"github.com/nitishfy/go-webdev/pkg/config"
 	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
 )
 
+var app *config.AppConfig
+
+func NewTemplate(a *config.AppConfig) {
+	app = a
+}
+
 // RenderTemplate renders a template
 func RenderTemplate(w http.ResponseWriter, tmpl string) {
-	// create a template cache
-	tc, err := CreateTemplateCache()
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	// get template from the template cache
-	t, ok := tc[tmpl]
+	t, ok := app.TemplateCache[tmpl]
 	if !ok {
-		log.Fatal(err)
+		log.Fatal("could not get template from template cache")
 	}
 
 	buf := new(bytes.Buffer)
 
-	err = t.Execute(buf, nil)
+	err := t.Execute(buf, nil)
 	if err != nil {
 		log.Println(err)
 	}
